@@ -1,7 +1,7 @@
 import { Fab, css, keyframes } from '@mui/material';
 import './App.css';
 import styled from '@emotion/styled';
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 
 
 const expand = keyframes`
@@ -10,7 +10,7 @@ const expand = keyframes`
   }
 
   to {
-  height: 200px;
+    height: 200px;
   }
 `;
 
@@ -20,9 +20,42 @@ const shrink = keyframes`
   }
 
   to {
-  height: 0px;
+    height: 0px;
   }
 `;
+
+const rotateIn = keyframes`
+  from{
+    rotate:0deg
+  }
+  to{
+    rotate:45deg
+  }
+`
+const rotateOut = keyframes`
+  from{
+    rotate:45deg
+  }
+  to{
+    rotate:0deg
+  }
+`
+
+const floatAnimation = keyframes`
+  0% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-8px);
+  }
+  100% {
+    transform: translateY(0);
+  }
+`;
+
+const MainButton = styled(Fab)`
+  animation: ${({ isOpen }) => isOpen === false ? rotateOut : isOpen === true ? rotateIn : ""} .3s alternate forwards, ${({ isOpen }) => isOpen ? "" : floatAnimation} 2s infinite ease-in-out;
+  `
 
 const OptionsContainer = styled.div`
   height: ${p => p.isOpen ? css`200px` : css`0`};
@@ -36,10 +69,11 @@ const OptionsContainer = styled.div`
       background-color: #3498db;
   }
   animation: ${({ isOpen }) => isOpen === false ? shrink : isOpen === true ? expand : ""} 0.3s alternate;
+  margin-top: 1rem;
 `
 
 const FabStyled = styled(Fab)`
-  margin-top: 16px;
+  margin-bottom: 16px;
 `
 
 function App() {
@@ -48,26 +82,46 @@ function App() {
   return (
     <div className="App">
       <header className="App-header">
-        <Fab color="primary" aria-label="add" onClick={() => setOpenState(p => !p)}>
-          +
-        </Fab>
-        <OptionsContainer isOpen={isOpen}>
-          <FabStyled>
+        {/* TODO: create style const and fix rotate to really be at the bottom */}
+        <div style={{
+          zIndex: 2,
+          position: "fixed",
+          bottom: "1rem",
+          right: "1rem",
+          rotate: "180deg"
+        }}>
+          <MainButton isOpen={isOpen} color="primary" aria-label="add" onClick={() => setOpenState(p => !p)}>
             +
-          </FabStyled>
-          <FabStyled>
-            +
-          </FabStyled>
-          <FabStyled>
-            +
-          </FabStyled>
-          <FabStyled>
-            +
-          </FabStyled>
-          <FabStyled>
-            +
-          </FabStyled>
-        </OptionsContainer>
+          </MainButton>
+          <OptionsContainer isOpen={isOpen}>
+            <FabStyled>
+              +
+            </FabStyled>
+            <FabStyled>
+              +
+            </FabStyled>
+            <FabStyled>
+              +
+            </FabStyled>
+            <FabStyled>
+              +
+            </FabStyled>
+            <FabStyled>
+              +
+            </FabStyled>
+          </OptionsContainer>
+        </div>
+        {
+          isOpen ?
+            <div onClick={() => setOpenState(p => !p)}
+              style={{
+                position: "fixed",
+                inset: 0,
+                zIndex: 1
+              }}></div>
+            :
+            <></>
+        }
       </header>
     </div>
 
