@@ -1,7 +1,7 @@
 import { Fab, css, keyframes } from '@mui/material';
 import './App.css';
 import styled from '@emotion/styled';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 
 
 const expand = keyframes`
@@ -25,7 +25,7 @@ const shrink = keyframes`
 `;
 
 const OptionsContainer = styled.div`
-  height: ${p => p.isOpen ? css`0px` : css`200px`};
+  height: ${p => p.isOpen ? css`200px` : css`0`};
   overflow: auto;
   width: min-content;
   ::-webkit-scrollbar {
@@ -35,7 +35,7 @@ const OptionsContainer = styled.div`
   ::-webkit-scrollbar-thumb {
       background-color: #3498db;
   }
-  animation: ${p => p.isOpen ? shrink : expand} 0.3s alternate;
+  animation: ${({ isOpen }) => isOpen === false ? shrink : isOpen === true ? expand : ""} 0.3s alternate;
 `
 
 const FabStyled = styled(Fab)`
@@ -43,7 +43,7 @@ const FabStyled = styled(Fab)`
 `
 
 function App() {
-  const [isOpen, setOpenState] = useState(false)
+  const [isOpen, setOpenState] = useState(undefined)
 
   return (
     <div className="App">
