@@ -10,13 +10,13 @@ const expand = keyframes`
   }
 
   to {
-    height: 200px;
+    height: 248px;
   }
 `;
 
 const shrink = keyframes`
   from {
-    height: 200px;
+    height: 248px;
   }
 
   to {
@@ -58,22 +58,25 @@ const MainButton = styled(Fab)`
   `
 
 const OptionsContainer = styled.div`
-  height: ${p => p.isOpen ? css`200px` : css`0`};
+  height: ${p => p.isOpen ? css`248px` : css`0`};
   overflow: auto;
   width: min-content;
   ::-webkit-scrollbar {
-    width: 4px;
+    width: 0px;
     border-radius: 8px;
   }
   ::-webkit-scrollbar-thumb {
       background-color: #3498db;
   }
   animation: ${({ isOpen }) => isOpen === false ? shrink : isOpen === true ? expand : ""} 0.3s alternate;
-  margin-top: 1rem;
+  /* background-color: tomato; */
+  border-radius: 2rem 2rem 0 0;
+  transform: translateY(2rem);
+  /* border-bottom: 3rem solid blue; */
 `
 
 const FabStyled = styled(Fab)`
-  margin-bottom: 16px;
+  margin-top: 16px;
 `
 
 function App() {
@@ -82,17 +85,12 @@ function App() {
   return (
     <div className="App">
       <header className="App-header">
-        {/* TODO: create style const and fix rotate to really be at the bottom */}
         <div style={{
           zIndex: 2,
           position: "fixed",
           bottom: "1rem",
           right: "1rem",
-          rotate: "180deg"
         }}>
-          <MainButton isOpen={isOpen} color="primary" aria-label="add" onClick={() => setOpenState(p => !p)}>
-            +
-          </MainButton>
           <OptionsContainer isOpen={isOpen}>
             <FabStyled>
               +
@@ -106,10 +104,13 @@ function App() {
             <FabStyled>
               +
             </FabStyled>
-            <FabStyled>
+            <FabStyled style={{ marginBottom: "3rem" }}>
               +
             </FabStyled>
           </OptionsContainer>
+          <MainButton isOpen={isOpen} color="primary" aria-label="add" onClick={() => setOpenState(p => !p)}>
+            +
+          </MainButton>
         </div>
         {
           isOpen ?
