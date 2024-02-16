@@ -1,7 +1,7 @@
-import { Fab, css, keyframes } from '@mui/material';
+import { Button, Fab, css, keyframes } from '@mui/material';
 import './App.css';
 import styled from '@emotion/styled';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 
 
 const expand = keyframes`
@@ -40,6 +40,26 @@ const rotateOut = keyframes`
     rotate:0deg
   }
 `
+const a = keyframes`
+  from{
+    width: auto;
+    border-radius: auto;
+  }
+  to{
+    width: 56px;
+    border-radius: 28px;
+  }
+`
+const b = keyframes`
+  from{
+    width: 56px;
+    border-radius: 28px;
+  }
+  to{
+    width: auto;
+    border-radius: auto;
+  }
+`
 
 const floatAnimation = keyframes`
   0% {
@@ -53,8 +73,13 @@ const floatAnimation = keyframes`
   }
 `;
 
-const MainButton = styled(Fab)`
-  animation: ${({ isOpen }) => isOpen === false ? rotateOut : isOpen === true ? rotateIn : ""} .3s alternate forwards, ${({ isOpen }) => isOpen ? "" : floatAnimation} 2s infinite ease-in-out;
+const MainButton = styled(Button)`
+  animation: 
+  /* ${({ isOpen }) => isOpen === false ? rotateOut : isOpen === true ? rotateIn : ""} .3s alternate forwards,
+  ${({ isOpen }) => isOpen ? "" : floatAnimation} 2s infinite ease-in-out, */
+  ${({ mainBtnExpanded }) => mainBtnExpanded ? b : a} .2s alternate forwards;
+  height: 56px;
+  min-width: 56px;
   `
 
 const OptionsContainer = styled.div`
@@ -69,18 +94,54 @@ const OptionsContainer = styled.div`
       background-color: #3498db;
   }
   animation: ${({ isOpen }) => isOpen === false ? shrink : isOpen === true ? expand : ""} 0.3s alternate;
-  /* background-color: tomato; */
   border-radius: 2rem 2rem 0 0;
   transform: translateY(2rem);
-  /* border-bottom: 3rem solid blue; */
 `
 
 const FabStyled = styled(Fab)`
   margin-top: 16px;
 `
 
+const Spacer = styled.section`
+  height: 75vh;
+  border: 2px solid tomato;
+  border-radius: 2rem;
+`
+
 function App() {
-  const [isOpen, setOpenState] = useState(undefined)
+  const [isMenuOpen, setMenuState] = useState(undefined)
+  const [mainBtnExpanded, setMainBtnState] = useState(true)
+  const [displayText, setTextState] = useState(true)
+
+  const a = (e) => {
+    if (window.scrollY === 0)
+      setMainBtnState(true)
+    else if (mainBtnExpanded)
+      setMainBtnState(false)
+  }
+
+  useEffect(() => {
+    window.addEventListener("scroll", a)
+  })
+
+  useEffect(() => {
+    if (isMenuOpen && mainBtnExpanded)
+      setMainBtnState(false)
+    else if (window.scrollY === 0 && !isMenuOpen && !mainBtnExpanded)
+      setMainBtnState(true)
+  }, [isMenuOpen, mainBtnExpanded])
+
+  const endMainBtnAnimation = e => {
+    if (e.animationName.includes("1r"))
+      setTextState(true)
+  }
+  // 1d = encolhe
+  // 1r = cresce
+
+  const startMainBtnAnimation = e => {
+    if (e.animationName.includes("1d"))
+      setTextState(false)
+  }
 
   return (
     <div className="App">
@@ -91,7 +152,7 @@ function App() {
           bottom: "1rem",
           right: "1rem",
         }}>
-          <OptionsContainer isOpen={isOpen}>
+          <OptionsContainer isOpen={isMenuOpen}>
             <FabStyled>
               +
             </FabStyled>
@@ -108,13 +169,14 @@ function App() {
               +
             </FabStyled>
           </OptionsContainer>
-          <MainButton isOpen={isOpen} color="primary" aria-label="add" onClick={() => setOpenState(p => !p)}>
+          <MainButton onAnimationStart={startMainBtnAnimation} onAnimationEnd={endMainBtnAnimation} mainBtnExpanded={mainBtnExpanded} variant='contained' isOpen={isMenuOpen} color="primary" aria-label="add" onClick={() => setMenuState(p => !p)}>
+            {displayText ? "Teste " : ""}
             +
           </MainButton>
         </div>
         {
-          isOpen ?
-            <div onClick={() => setOpenState(p => !p)}
+          isMenuOpen ?
+            <div onClick={() => setMenuState(p => !p)}
               style={{
                 position: "fixed",
                 inset: 0,
@@ -123,6 +185,9 @@ function App() {
             :
             <></>
         }
+        <Spacer />
+        <Spacer />
+        <Spacer />
       </header>
     </div>
 
