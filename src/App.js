@@ -95,7 +95,7 @@ const OptionsContainer = styled.div`
   }
   animation: ${({ isOpen }) => isOpen === false ? shrink : isOpen === true ? expand : ""} 0.3s alternate;
   border-radius: 2rem 2rem 0 0;
-  transform: translateY(2rem);
+  transform: translateY(-2rem);
 `
 
 const FabStyled = styled(Fab)`
@@ -143,6 +143,19 @@ function App() {
       setTextState(false)
   }
 
+  const containerScroll = (e) => {
+    const scrollPosition = e.currentTarget.scrollTop;
+    const containerHeight = e.currentTarget.clientHeight;
+
+    e.currentTarget.childNodes.forEach(function (box) {
+      const boxOffsetTop = box.offsetTop;
+      // TODO: understand math
+      const transparency = Math.max(0, Math.min(1, 1 - (Math.abs(boxOffsetTop - scrollPosition) / containerHeight)));
+      box.style.opacity = transparency;
+    });
+  }
+
+
   return (
     <div className="App">
       <header className="App-header">
@@ -152,7 +165,7 @@ function App() {
           bottom: "1rem",
           right: "1rem",
         }}>
-          <OptionsContainer isOpen={isMenuOpen}>
+          <OptionsContainer onScroll={containerScroll} isOpen={isMenuOpen}>
             <FabStyled>
               +
             </FabStyled>
