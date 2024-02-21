@@ -75,11 +75,12 @@ const floatAnimation = keyframes`
 
 const MainButton = styled(Button)`
   animation: 
-  /* ${({ isOpen }) => isOpen === false ? rotateOut : isOpen === true ? rotateIn : ""} .3s alternate forwards,
-  ${({ isOpen }) => isOpen ? "" : floatAnimation} 2s infinite ease-in-out, */
+  ${({ isOpen }) => isOpen === false ? rotateOut : isOpen === true ? rotateIn : ""} .3s alternate forwards,
+  ${({ isOpen }) => isOpen ? "" : floatAnimation} 2s infinite ease-in-out,
   ${({ mainBtnExpanded }) => mainBtnExpanded ? b : a} .2s alternate forwards;
   height: 56px;
   min-width: 56px;
+  border-radius:28px;
   `
 
 const OptionsContainer = styled.div`
@@ -100,6 +101,9 @@ const OptionsContainer = styled.div`
 
 const FabStyled = styled(Fab)`
   margin-top: 16px;
+  &:hover{
+    opacity: 1!important;
+  }
 `
 
 const Spacer = styled.section`
@@ -149,12 +153,26 @@ function App() {
 
     e.currentTarget.childNodes.forEach(function (box) {
       const boxOffsetTop = box.offsetTop;
-      // TODO: understand math
-      const transparency = Math.max(0, Math.min(1, 1 - (Math.abs(boxOffsetTop - scrollPosition) / containerHeight)));
-      box.style.opacity = transparency;
+      const boxHeight = box.offsetHeight;
+
+      // Calcular a distância relativa do topo e da parte inferior da div pai
+      const distanceToTop = boxOffsetTop - scrollPosition;
+      const distanceToBottom = scrollPosition + containerHeight - (boxOffsetTop + boxHeight);
+
+      // Calcular a opacidade com base na distância relativa
+      let opacity = 1;
+      if (distanceToTop < containerHeight / 2) {
+        opacity = distanceToTop / (containerHeight / 2);
+      } else if (distanceToBottom < containerHeight / 2) {
+        opacity = distanceToBottom / (containerHeight / 2);
+      }
+
+      // Aplicar a opacidade à div filho
+      opacity = opacity >= 0.8 ? 1 : opacity
+      box.style.opacity = opacity;
+      box.innerText = opacity.toFixed(2)
     });
   }
-
 
   return (
     <div className="App">
@@ -165,6 +183,8 @@ function App() {
           bottom: "1rem",
           right: "1rem",
         }}>
+          {/* TODO: Ajustar estado inicial do isOpen */}
+          {/* TODO: ajustar posição vertical */}
           <OptionsContainer onScroll={containerScroll} isOpen={isMenuOpen}>
             <FabStyled>
               +
@@ -183,6 +203,7 @@ function App() {
             </FabStyled>
           </OptionsContainer>
           <MainButton onAnimationStart={startMainBtnAnimation} onAnimationEnd={endMainBtnAnimation} mainBtnExpanded={mainBtnExpanded} variant='contained' isOpen={isMenuOpen} color="primary" aria-label="add" onClick={() => setMenuState(p => !p)}>
+            {/* TODO: animar ao abrir ou fechar */}
             {displayText ? "Teste " : ""}
             +
           </MainButton>
