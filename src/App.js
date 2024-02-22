@@ -95,15 +95,16 @@ const OptionsContainer = styled.div`
       background-color: #3498db;
   }
   animation: ${({ isOpen }) => isOpen === false ? shrink : isOpen === true ? expand : ""} 0.3s alternate;
-  border-radius: 2rem 2rem 0 0;
-  transform: translateY(-2rem);
+   transform: translateY(18px);
 `
 
 const FabStyled = styled(Fab)`
-  margin-top: 16px;
-  &:hover{
+  margin-top: ${({ index }) => index === 0 ? "88px" : "16px"};
+  margin-bottom: ${({ index, numberOfItems }) => index === numberOfItems - 1 ? "88px" : "0"};
+   &:hover{
     opacity: 1!important;
-  }
+  }; 
+  
 `
 
 const Spacer = styled.section`
@@ -116,6 +117,8 @@ function App() {
   const [isMenuOpen, setMenuState] = useState(undefined)
   const [mainBtnExpanded, setMainBtnState] = useState(true)
   const [displayText, setTextState] = useState(true)
+  const [currentHoverOpacity, setCurrentHoverOpacity] = useState(0)
+  const numberOfItems = 8
 
   const a = (e) => {
     if (window.scrollY === 0)
@@ -168,14 +171,23 @@ function App() {
       }
 
       // Aplicar a opacidade à div filho
-      opacity = opacity >= 0.8 ? 1 : opacity
+      opacity = opacity >= 0.6 ? 1 : opacity
       box.style.opacity = opacity;
       box.innerText = opacity.toFixed(2)
     });
   }
 
+  const renderOptions = () => {
+    let items = []
+    for (let index = 0; index < 8; index++) {
+      items.push(<FabStyled onMouseOver={e => setCurrentHoverOpacity(Number(e.target.style.opacity || 0))} onClick={(e) => console.log(e)} index={index} numberOfItems={numberOfItems} children="0" />)
+    }
+    return items
+  }
+
   return (
-    <div className="App">
+    // TODO: Ajustar erros no console 
+    < div className="App" >
       <header className="App-header">
         <div style={{
           zIndex: 2,
@@ -186,21 +198,8 @@ function App() {
           {/* TODO: Ajustar estado inicial do isOpen */}
           {/* TODO: ajustar posição vertical */}
           <OptionsContainer onScroll={containerScroll} isOpen={isMenuOpen}>
-            <FabStyled>
-              +
-            </FabStyled>
-            <FabStyled>
-              +
-            </FabStyled>
-            <FabStyled>
-              +
-            </FabStyled>
-            <FabStyled>
-              +
-            </FabStyled>
-            <FabStyled style={{ marginBottom: "3rem" }}>
-              +
-            </FabStyled>
+            {/* TODO: ajustar hover quando for negativo */}
+            {renderOptions()}
           </OptionsContainer>
           <MainButton onAnimationStart={startMainBtnAnimation} onAnimationEnd={endMainBtnAnimation} mainBtnExpanded={mainBtnExpanded} variant='contained' isOpen={isMenuOpen} color="primary" aria-label="add" onClick={() => setMenuState(p => !p)}>
             {/* TODO: animar ao abrir ou fechar */}
@@ -223,7 +222,7 @@ function App() {
         <Spacer />
         <Spacer />
       </header>
-    </div>
+    </div >
 
   );
 }
