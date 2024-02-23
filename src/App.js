@@ -1,7 +1,7 @@
 import { Button, Fab, css, keyframes } from '@mui/material';
 import './App.css';
 import styled from '@emotion/styled';
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 
 
 const expand = keyframes`
@@ -75,9 +75,9 @@ const floatAnimation = keyframes`
 
 const MainButton = styled(Button)`
   animation: 
-  ${({ isOpen }) => isOpen === false ? rotateOut : isOpen === true ? rotateIn : ""} .3s alternate forwards,
-  ${({ isOpen }) => isOpen ? "" : floatAnimation} 2s infinite ease-in-out,
-  ${({ mainBtnExpanded }) => mainBtnExpanded ? b : a} .2s alternate forwards;
+  ${({ isopen }) => isopen === false ? rotateOut : isopen === true ? rotateIn : ""} .3s alternate forwards,
+  ${({ isopen }) => isopen ? "" : floatAnimation} 2s infinite ease-in-out,
+  ${({ mainbuttonexpanded }) => mainbuttonexpanded ? b : a} .2s alternate forwards;
   height: 56px;
   min-width: 56px;
   border-radius:28px;
@@ -95,12 +95,12 @@ const OptionsContainer = styled.div`
       background-color: #3498db;
   }
   animation: ${({ isOpen }) => isOpen === false ? shrink : isOpen === true ? expand : ""} 0.3s alternate;
-   transform: translateY(18px);
+   /* transform: translateY(18px); */
 `
 
 const FabStyled = styled(Fab)`
   margin-top: ${({ index }) => index === 0 ? "88px" : "16px"};
-  margin-bottom: ${({ index, numberOfItems }) => index === numberOfItems - 1 ? "88px" : "0"};
+  margin-bottom: ${({ index, numberofitems }) => index === numberofitems - 1 ? "88px" : "0"};
    &:hover{
     opacity: 1!important;
   }; 
@@ -117,8 +117,21 @@ function App() {
   const [isMenuOpen, setMenuState] = useState(undefined)
   const [mainBtnExpanded, setMainBtnState] = useState(true)
   const [displayText, setTextState] = useState(true)
-  const [currentHoverOpacity, setCurrentHoverOpacity] = useState(0)
   const numberOfItems = 8
+
+  const renderOptions = (numberOfItems) => {
+    let items = [];
+    console.log("renderizando");
+    for (let index = 0; index < 8; index++) {
+      const id = Math.random();
+      items.push(
+        <FabStyled key={id} onClick={(e) => console.log(e)} index={index} numberofitems={numberOfItems} children="0" />
+      );
+    }
+    return items;
+  };
+
+  const options = useMemo(() => renderOptions(numberOfItems), [numberOfItems]);
 
   const a = (e) => {
     if (window.scrollY === 0)
@@ -163,30 +176,23 @@ function App() {
       const distanceToBottom = scrollPosition + containerHeight - (boxOffsetTop + boxHeight);
 
       // Calcular a opacidade com base na distância relativa
-      let opacity = 1;
-      if (distanceToTop < containerHeight / 2) {
-        opacity = distanceToTop / (containerHeight / 2);
-      } else if (distanceToBottom < containerHeight / 2) {
-        opacity = distanceToBottom / (containerHeight / 2);
-      }
+      let opacity = 1
 
-      // Aplicar a opacidade à div filho
-      opacity = opacity >= 0.6 ? 1 : opacity
+      if (distanceToTop < (containerHeight / 2) && distanceToBottom < (containerHeight / 2))
+        opacity = 1
+      else
+        opacity = Math.min(distanceToBottom, distanceToTop) / 100
+
+      // TODO: adicionar o gradiente conforme toca na borda e mouse estiver em cima
+      // const isAboveMiddle =
+
+      box.innerHTML = `${distanceToTop}<br/>${distanceToBottom}`
       box.style.opacity = opacity;
-      box.innerText = opacity.toFixed(2)
+      // box.style.background = `linear-gradient(to bottom, rgba(255, 255, 255, 1), rgba(255, 255, 255, 0) 25%)` /* gradiente de branco para transparente */
     });
   }
 
-  const renderOptions = () => {
-    let items = []
-    for (let index = 0; index < 8; index++) {
-      items.push(<FabStyled onMouseOver={e => setCurrentHoverOpacity(Number(e.target.style.opacity || 0))} onClick={(e) => console.log(e)} index={index} numberOfItems={numberOfItems} children="0" />)
-    }
-    return items
-  }
-
   return (
-    // TODO: Ajustar erros no console 
     < div className="App" >
       <header className="App-header">
         <div style={{
@@ -196,12 +202,12 @@ function App() {
           right: "1rem",
         }}>
           {/* TODO: Ajustar estado inicial do isOpen */}
-          {/* TODO: ajustar posição vertical */}
           <OptionsContainer onScroll={containerScroll} isOpen={isMenuOpen}>
             {/* TODO: ajustar hover quando for negativo */}
-            {renderOptions()}
+            {/* TODO: ajustar opacidade inicial */}
+            {options}
           </OptionsContainer>
-          <MainButton onAnimationStart={startMainBtnAnimation} onAnimationEnd={endMainBtnAnimation} mainBtnExpanded={mainBtnExpanded} variant='contained' isOpen={isMenuOpen} color="primary" aria-label="add" onClick={() => setMenuState(p => !p)}>
+          <MainButton onAnimationStart={startMainBtnAnimation} onAnimationEnd={endMainBtnAnimation} mainbuttonexpanded={mainBtnExpanded ? "1" : ""} variant='contained' isopen={isMenuOpen} color="primary" aria-label="add" onClick={() => setMenuState(p => !p)}>
             {/* TODO: animar ao abrir ou fechar */}
             {displayText ? "Teste " : ""}
             +
