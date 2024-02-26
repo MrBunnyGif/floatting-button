@@ -121,11 +121,10 @@ function App() {
 
   const renderOptions = (numberOfItems) => {
     let items = [];
-    console.log("renderizando");
     for (let index = 0; index < 8; index++) {
       const id = Math.random();
       items.push(
-        <FabStyled key={id} onClick={(e) => console.log(e)} index={index} numberofitems={numberOfItems} children="0" />
+        <FabStyled key={id} index={index} numberofitems={numberOfItems} children="0" />
       );
     }
     return items;
